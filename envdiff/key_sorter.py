@@ -63,3 +63,18 @@ class KeySorter:
             prefix = self._extract_prefix(key) or self.ungrouped_label
             grouped[prefix].append(key)
         return [(p, sorted(grouped[p])) for p in sorted(grouped)]
+
+    def filter_by_prefix(
+        self, env: Dict[str, Optional[str]], prefix: str
+    ) -> Dict[str, Optional[str]]:
+        """Return only the key-value pairs whose prefix matches the given prefix.
+
+        The comparison is case-sensitive and uses the configured separator.
+        Keys without a separator are never included, even if the ungrouped
+        label happens to match the requested prefix.
+        """
+        return {
+            key: value
+            for key, value in env.items()
+            if self._extract_prefix(key) == prefix
+        }
