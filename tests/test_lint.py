@@ -85,3 +85,17 @@ def test_str_dirty_result(linter):
 def test_lint_issue_str():
     issue = LintIssue("MY_KEY", "Something is wrong.", "warning")
     assert str(issue) == "[WARNING] MY_KEY: Something is wrong."
+
+
+def test_warnings_and_errors_are_subsets_of_issues(linter):
+    """Ensure result.warnings and result.errors are consistent subsets of result.issues."""
+    env = {
+        "DB_PASSWORD": "",          # error: empty sensitive key
+        "APP_NAME": "  myapp  ",    # warning: whitespace
+    }
+    result = linter.lint(env)
+    all_issues = set(result.issues)
+    assert all(i in all_issues for i in result.errors)
+    assert all(i in all_issues for i in result.warnings)
+    assert all(i.severity == "error" for i in result.errors)
+    assert all(i.severity == "warning" for i in result.warnings)
