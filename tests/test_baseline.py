@@ -70,3 +70,15 @@ def test_baseline_entry_roundtrip():
     assert restored.env == original.env
     assert restored.label == original.label
     assert restored.recorded_at == original.recorded_at
+
+
+def test_record_overwrites_existing_entry(manager):
+    """Recording the same path twice should update the entry, not duplicate it."""
+    manager.record("prod.env", {"KEY": "old_value"}, label="v1")
+    manager.record("prod.env", {"KEY": "new_value"}, label="v2")
+
+    entry = manager.get("prod.env")
+    assert entry is not None
+    assert entry.env["KEY"] == "new_value"
+    assert entry.label == "v2"
+    assert len(manager.list_all()) == 1
