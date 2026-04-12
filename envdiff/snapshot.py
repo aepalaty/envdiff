@@ -63,8 +63,24 @@ class SnapshotManager:
         return path
 
     def load(self, path: str) -> Snapshot:
-        """Load a snapshot from a JSON file."""
-        data = json.loads(Path(path).read_text(encoding="utf-8"))
+        """Load a snapshot from a JSON file.
+
+        Raises:
+            FileNotFoundError: If the given path does not exist.
+            ValueError: If the file cannot be parsed as valid JSON or is
+                missing required fields ('source' or 'captured_at').
+        """
+        file_path = Path(path)
+        if not file_path.exists():
+            raise FileNotFoundError(f"Snapshot file not found: {path}")
+        try:
+            data = json.loads(file_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"Invalid JSON in snapshot file '{path}': {exc}") from exc
+        if "source" not in data or "captured_at" not in data:
+            raise ValueError(
+                f"Snapshot file '{path}' is missing required fields ('source', 'captured_at')."
+            )
         return Snapshot.from_dict(data)
 
     def list_snapshots(self) -> list[Path]:
