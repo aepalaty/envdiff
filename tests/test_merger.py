@@ -85,3 +85,12 @@ def test_merge_empty_envs(merger):
     assert result.merged == {}
     assert not result.has_conflicts
     assert result.sources == []
+
+
+def test_merge_single_env(merger):
+    """Merging a single environment should produce no conflicts."""
+    envs = [("dev", {"HOST": "localhost", "PORT": "5432", "DEBUG": "true"})]
+    result = merger.merge(envs)
+    assert result.merged == {"HOST": "localhost", "PORT": "5432", "DEBUG": "true"}
+    assert not result.has_conflicts
+    assert result.sources == ["dev"]
