@@ -52,6 +52,15 @@ class KeyUsageReport:
         )
         return sorted_records[:n]
 
+    def keys_seen_in_all(self, env_names: List[str]) -> List[KeyUsageRecord]:
+        """Return records for keys that appear in every one of the given env names."""
+        env_set = set(env_names)
+        return [
+            record
+            for record in self.records.values()
+            if env_set.issubset(set(record.seen_in))
+        ]
+
 
 class KeyUsageTracker:
     """Builds a usage report from multiple named env dicts."""
