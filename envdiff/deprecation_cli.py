@@ -29,8 +29,22 @@ def add_deprecation_subcommand(subparsers: argparse._SubParsersAction) -> None:
 
 
 def run_deprecation_command(args: argparse.Namespace) -> int:
+    """Run the deprecations subcommand.
+
+    Loads the deprecation registry (from a config file or by auto-discovery),
+    then checks each provided .env file for deprecated keys.
+
+    Returns:
+        0 if no deprecated keys were found.
+        1 if one or more deprecated keys were found.
+        2 if an error occurred (e.g. file not found or registry not loaded).
+    """
     if args.config:
-        registry = load_registry_from_path(args.config)
+        try:
+            registry = load_registry_from_path(args.config)
+        except FileNotFoundError:
+            print(f"Config file not found: {args.config}", file=sys.stderr)
+            return 2
     else:
         registry = load_registry_auto()
 
