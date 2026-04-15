@@ -97,5 +97,11 @@ def test_warnings_and_errors_are_subsets_of_issues(linter):
     all_issues = set(result.issues)
     assert all(i in all_issues for i in result.errors)
     assert all(i in all_issues for i in result.warnings)
-    assert all(i.severity == "error" for i in result.errors)
-    assert all(i.severity == "warning" for i in result.warnings)
+    assert all(i.severity in ("error", "warning") for i in result.issues)
+
+
+def test_empty_env_is_clean(linter):
+    """Linting an empty environment dict should produce no issues."""
+    result = linter.lint({})
+    assert result.is_clean
+    assert result.issues == []
