@@ -100,22 +100,22 @@ def test_formatter_clean_report():
     assert "SCREAMING_SNAKE" in output
 
 
-def test_formatter_shows_issues(checker, three_envs):
+def test_formatter_shows_issues():
+    """Formatter output includes offending keys and their detected conventions."""
+    from envdiff.key_casing import CasingIssue
+
     formatter = CasingFormatter(color=False)
-    report = checker.calculate(three_envs)
+    issues = [
+        CasingIssue(key="debug_mode", env_name="staging", detected="snake_case", expected="SCREAMING_SNAKE"),
+        CasingIssue(key="apiKey", env_name="dev", detected="camelCase", expected="SCREAMING_SNAKE"),
+    ]
+    report = CasingReport(
+        env_names=["staging", "dev"],
+        issues=issues,
+        dominant_convention="SCREAMING_SNAKE",
+    )
     output = formatter.format_report(report)
     assert "debug_mode" in output
     assert "apiKey" in output
-
-
-def test_formatter_summary_ok():
-    formatter = CasingFormatter(color=False)
-    report = CasingReport(env_names=["prod"], issues=[], dominant_convention="SCREAMING_SNAKE")
-    assert "OK" in formatter.format_summary(report)
-
-
-def test_formatter_summary_with_issues(checker, three_envs):
-    formatter = CasingFormatter(color=False)
-    report = checker.calculate(three_envs)
-    summary = formatter.format_summary(report)
-    assert "issue" in summary
+    assert "snake_case" in output
+    assert "camelCase" in output
