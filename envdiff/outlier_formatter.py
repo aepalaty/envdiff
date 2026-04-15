@@ -52,3 +52,17 @@ class OutlierFormatter:
         if count == 0:
             return self._c("outliers: none", "32")
         return self._c(f"outliers: {count} key(s) deviate from majority", "1;31")
+
+    def format_entry_compact(self, entry: OutlierEntry) -> str:
+        """Return a single-line compact representation of an outlier entry.
+
+        Useful for logging or terse output modes where full block formatting
+        is too verbose.
+        """
+        outlier_parts = ", ".join(
+            f"{env}={repr(val)}" for env, val in entry.outlier_envs.items()
+        )
+        key_label = self._c(entry.key, "1;33")
+        common_label = self._c(repr(entry.common_value), "32")
+        outlier_label = self._c(outlier_parts, "31")
+        return f"{key_label}: majority={common_label}  outliers=[{outlier_label}]"
