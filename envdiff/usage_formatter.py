@@ -16,6 +16,11 @@ class UsageFormatter:
             return text
         return f"\033[{code}m{text}\033[0m"
 
+    def _format_key_record(self, rec, key_color: str) -> str:
+        """Format a single key record as an indented line."""
+        envs = ", ".join(rec.seen_in)
+        return f"  {self._c(rec.key, key_color)}  (count={rec.occurrence_count}, envs=[{envs}])"
+
     def format_report(self, report: KeyUsageReport, top_n: int = 5) -> str:
         lines = []
         lines.append(self._c(f"Key Usage Report ({report.total_keys} unique keys)", "1"))
@@ -23,18 +28,12 @@ class UsageFormatter:
 
         lines.append(self._c("Most used keys:", "36"))
         for rec in report.most_common(top_n):
-            envs = ", ".join(rec.seen_in)
-            lines.append(
-                f"  {self._c(rec.key, '32')}  (count={rec.occurrence_count}, envs=[{envs}])"
-            )
+            lines.append(self._format_key_record(rec, "32"))
 
         lines.append("")
         lines.append(self._c("Least used keys:", "33"))
         for rec in report.least_common(top_n):
-            envs = ", ".join(rec.seen_in)
-            lines.append(
-                f"  {self._c(rec.key, '31')}  (count={rec.occurrence_count}, envs=[{envs}])"
-            )
+            lines.append(self._format_key_record(rec, "31"))
 
         return "\n".join(lines)
 
