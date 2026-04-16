@@ -78,3 +78,15 @@ class KeySorter:
             for key, value in env.items()
             if self._extract_prefix(key) == prefix
         }
+
+    def get_prefixes(self, env: Dict[str, Optional[str]]) -> List[str]:
+        """Return a sorted list of unique prefixes found in the env keys.
+
+        Keys without a separator are not included in the result.
+        """
+        prefixes = set()
+        for key in env:
+            prefix = self._extract_prefix(key)
+            if prefix is not None:
+                prefixes.add(prefix)
+        return sorted(prefixes)
