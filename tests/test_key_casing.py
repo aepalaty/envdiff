@@ -101,7 +101,7 @@ def test_formatter_clean_report():
 
 
 def test_formatter_shows_issues():
-    """Formatter output includes offending keys and their detected conventions."""
+    """Formatter output should list each offending key and its detected convention."""
     from envdiff.key_casing import CasingIssue
 
     formatter = CasingFormatter(color=False)
@@ -110,7 +110,7 @@ def test_formatter_shows_issues():
         CasingIssue(key="apiKey", env_name="dev", detected="camelCase", expected="SCREAMING_SNAKE"),
     ]
     report = CasingReport(
-        env_names=["staging", "dev"],
+        env_names=["prod", "staging", "dev"],
         issues=issues,
         dominant_convention="SCREAMING_SNAKE",
     )
