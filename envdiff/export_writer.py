@@ -54,3 +54,19 @@ class ExportWriter:
         """Return a sensible default output filename for the given format."""
         ext = _FORMAT_EXTENSIONS.get(fmt, ".txt")
         return f"envdiff_report{ext}"
+
+    @classmethod
+    def from_default_path(cls, differences: List[EnvDifference], fmt: str) -> "ExportWriter":
+        """Create an ExportWriter using the default filename for the given format.
+
+        This is a convenience constructor for cases where the caller wants to
+        write to a file but has not specified an explicit output path.
+
+        Args:
+            differences: The list of env differences to export.
+            fmt: The export format (e.g. 'json', 'csv', 'markdown').
+
+        Returns:
+            An ExportWriter configured to write to the default filename.
+        """
+        return cls(differences, fmt, output_path=cls.default_filename(fmt))
